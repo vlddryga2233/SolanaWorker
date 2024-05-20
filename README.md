@@ -24,3 +24,87 @@ keypair 2 address: AHMm3knQvjYYGHoU38rGUe8XChGnWHGxTvtVmrHueXGA
 
 
 Transaction ID: 2WQdsXEetnbP7278XV5P1BLoMVCpkSZMYZqh2CWM5Dkd1cS9hLHV4szZn3X5DbK4s8AhWZ2J9jYhj1ANuu42GMXg
+
+
+
+pl-token create-token
+Creating token AQU19TGzgAf1KRAdgDUowuLiKA33Boi1ep6XWxdzuGwM under program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+
+Address:  AQU19TGzgAf1KRAdgDUowuLiKA33Boi1ep6XWxdzuGwM
+Decimals:  9
+
+Creating account 7KknKbUFERvkcuttadfDtMyCybe3LC36fmqT1VUXXWFt
+
+Minting 1000 tokens
+  Token: AQU19TGzgAf1KRAdgDUowuLiKA33Boi1ep6XWxdzuGwM
+  Recipient: 7KknKbUFERvkcuttadfDtMyCybe3LC36fmqT1VUXXWFt
+
+
+  New Token Account Address: 6uQW6FcJQoox5mjhd1sFmajfhSR69wmVBZuAzpirpwLW
+
+
+
+  curl https://api.devnet.solana.com -X POST -H "Content-Type: application/json" -d '
+  {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getTokenAccountsByOwner",
+    "params": [
+      "59k1RZ8L882PopU677T9oBAEU2c6MRc6cy7ZuWfBhG7K",
+      {
+        "mint": "AQU19TGzgAf1KRAdgDUowuLiKA33Boi1ep6XWxdzuGwM"
+      },
+      {
+        "encoding": "jsonParsed"
+      }
+    ]
+  }
+'
+
+{
+    "jsonrpc":"2.0",
+    "result":
+        {
+            "context":
+                {
+                    "apiVersion":"1.18.12",
+                    "slot":300242940
+                },
+            "value":[
+                {
+                    "account":
+                        {
+                            "data":
+                                {
+                                    "parsed":
+                                        {
+                                            "info":
+                                                {
+                                                    "isNative":false,
+                                                    "mint":"AQU19TGzgAf1KRAdgDUowuLiKA33Boi1ep6XWxdzuGwM","owner":"59k1RZ8L882PopU677T9oBAEU2c6MRc6cy7ZuWfBhG7K",
+                                                    "state":"initialized",
+                                                    "tokenAmount":
+                                                        {
+                                                            "amount":"90000000000",
+                                                            "decimals":9,
+                                                            "uiAmount":90.0,
+                                                            "uiAmountString":"90"
+                                                        }
+                                                },
+                                            "type":"account"
+                                        },
+                                    "program":"spl-token",
+                                    "space":165
+                                },
+                            "executable":false,
+                            "lamports":2039280,
+                            "owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                            "rentEpoch":18446744073709551615,
+                            "space":165
+                        },
+                "pubkey":"Ci67gDa8HFt23S9RwBnTjqdDdmc8nwCdnWp4KswWPARM"
+                }
+            ]
+        },
+    "id":1
+}

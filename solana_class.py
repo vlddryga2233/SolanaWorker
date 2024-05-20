@@ -6,6 +6,7 @@ from solders.system_program import TransferParams, transfer
 from solders.pubkey import Pubkey
 from solders.signature import Signature
 from solders.keypair import Keypair
+from spl.token.constants import TOKEN_PROGRAM_ID
 #from pyserum.connection import conn
 #from pyserum.market import Market
 import base58
@@ -24,6 +25,22 @@ class Solana_worker():
     async def get_balance(self):
         balance =  await self.client.get_balance(self.pubkey)
         return balance.value
+
+    async def create_token_account(self, client, token_mint_address, owner_keypair):
+        token_client = AsyncToken(client, token_mint_address, TOKEN_PROGRAM_ID, owner_keypair)
+        new_account_pubkey = await token_client.create_account(owner_keypair.pubkey())
+        return new_account_pubkey
+    
+    async def get_existing_token_account(self, owner_pubkey, token_mint_address):
+        opts = {
+            "encoding" : "base58"
+        }
+        resp = await self.client.get_token_accounts_by_owner(owner_pubkey, opts)
+        accounts = resp['result']['value']
+        if len(accounts) > 0:
+            return Pubkey.from_string(accounts[0]['pubkey'])
+        else:
+            raise ValueError("Token account not found.")
 
 
     def create_wallets(self, wallets_amount):
@@ -47,17 +64,14 @@ class Solana_worker():
         return str(transaction_signature.value)
 
     async def send_spl_token(self, spl_client: AsyncToken, source_token_address: Pubkey, destination_token_address: Pubkey, owner_keypair: Keypair, amount: float):
-        txn = await Transaction().add(
-            await spl_client.transfer(
-                source=source_token_address,
-                dest=destination_token_address,
-                owner=owner_keypair.pubkey(),
-                amount=int(amount * 1000000000)
-            )
+        transaction = await spl_client.transfer(
+            source=source_token_address,
+            dest=destination_token_address,
+            owner=owner_keypair,
+            amount=int(amount * 1000000000),  # Количество в минимальных единицах (например, 1 токен с 9 десятичными знаками = 1000000000)
+            multi_signers=None
         )
-        response = await self.client.send_transaction(txn, owner_keypair)
-        transaction_signature = response['result']
-        return str(transaction_signature)
+        return str(transaction.value)
     
     # Функция для поиска маркета в JSON-файле
     def find_market_address(self, pair_name):
@@ -78,7 +92,7 @@ class Solana_worker():
     
     async def close(self):
         await self.client.close()
-    """  
+
     # своп; принимает: адрес токена А, адрес токена Б, в каком токене ведется расчет, , сумму/ы, пару/ы ключей; возвращает: хеш(сигнатуру/ы) 
     async def swap_tokens(self, pair_name: str, base_token: AsyncToken, quote_token: AsyncToken, sender_keypair: Keypair, source_amount: float):
         # Подключение к рынку
@@ -124,7 +138,6 @@ class Solana_worker():
         response = await self.client.send_transaction(txn, sender_keypair)
         transaction_signature = response['result']
         return str(transaction_signature)
-    """
     
 
 
