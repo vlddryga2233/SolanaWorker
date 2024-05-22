@@ -15,7 +15,7 @@ import json
 
 class Solana_worker():
     def __init__(self, secret_key_json):
-        self.client = AsyncClient("https://api.devnet.solana.com")
+        self.client = AsyncClient("https://api.mainnet-beta.solana.com")
         self.keypair = Keypair.from_bytes(secret_key_json)
         self.pubkey = self.keypair.pubkey()
     
@@ -92,7 +92,7 @@ class Solana_worker():
     
     async def close(self):
         await self.client.close()
-
+    """
     # своп; принимает: адрес токена А, адрес токена Б, в каком токене ведется расчет, , сумму/ы, пару/ы ключей; возвращает: хеш(сигнатуру/ы) 
     async def swap_tokens(self, pair_name: str, base_token: AsyncToken, quote_token: AsyncToken, sender_keypair: Keypair, source_amount: float):
         # Подключение к рынку
@@ -119,7 +119,7 @@ class Solana_worker():
             base_token.transfer(
                 source=await base_token.get_account_info(sender_keypair.pubkey()),
                 dest=best_bid.order_id,
-                owner=sender_keypair.pubkey(),
+                owner=sender_keypair,
                 amount=int(source_amount * 1000000000)
             )
         )
@@ -129,7 +129,7 @@ class Solana_worker():
             quote_token.transfer(
                 source=best_ask.order_id,
                 dest=sender_keypair.pubkey(),
-                owner=sender_keypair.pubkey(),
+                owner=sender_keypair,
                 amount=int(source_amount * best_price * 1000000000)
             )
         )
@@ -138,6 +138,7 @@ class Solana_worker():
         response = await self.client.send_transaction(txn, sender_keypair)
         transaction_signature = response['result']
         return str(transaction_signature)
+        """
     
 
 
